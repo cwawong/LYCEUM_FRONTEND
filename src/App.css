@@ -32,7 +32,19 @@
   border: 5px solid grey;
 }
 
-.navbar_a {
+.debug_border_red{
+  border: 5px solid red;
+}
+
+.debug_border_green{
+  border: 5px solid green;
+}
+
+.debug_border_blue{
+  border: 5px solid blue;
+}
+
+.navbar_link {
   display: block;
   margin: 10px;
   width: 100px;
