@@ -13,9 +13,8 @@ class HomePage extends React.Component {
         'apiData': [],
     }
     showAPIPosts = () => {
-        const response = fetch("http://127.0.0.1:8000/api/getPost/1").then(response => response.json()).then(json => console.log("yo",json));
-        console.log(response)
-        console.log("hey", this.state.apiData)
+        const response = fetch("http://127.0.0.1:8000/api/getPosts").then(response => response.json()).then(json => this.setState({'apiData': json}));
+
     }
 
     clearAPIPosts = () => {
