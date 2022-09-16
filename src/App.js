@@ -11,7 +11,8 @@ import LoginPage from "./components/login_page";
 
 class App extends React.Component {
   state = {
-    topbarHeight: "100px",
+      topbarHeight: "100px",
+      loginStatus: "guest",
   }
   render() {
     return (
