@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import Topbar from "./Topbar";
 import Nav from 'react-bootstrap/Nav'
-import {AccountContext} from "../contexts/Contexts";
+import {AccountContext, APIContext} from "../contexts/Contexts";
+import { useNavigate } from 'react-router-dom';
+
+
 
 
 
@@ -9,21 +12,66 @@ import {AccountContext} from "../contexts/Contexts";
 
 function LoginPage(props) {
     const account = React.useContext(AccountContext);
-    const[state, setState] = useState('login');
-    const[name, setName] = useState('');
-    const[gender, setGender] = useState('');
-    const[email, setEmail] = useState('');
-    const[phone, setPhone] = useState('');
-    const[password, setPassword] = useState('');
+    const API = React.useContext(APIContext);
 
-    const handleLogIn = (event) => {
+    const navigate = useNavigate();
+
+    const[state, setState] = useState("login");
+    const[name, setName] = useState("");
+    const[gender, setGender] = useState("M");
+    const[email, setEmail] = useState("");
+    const[phone, setPhone] = useState("");
+    const[password, setPassword] = useState("");
+    const[message, setMessage] = useState([]);
+
+    const handleLogIn = async (event) => {
         event.preventDefault();
-        alert("Successful Log In!");
+        let users = await API.getObject("user", "all");
+        if (users === "failed")
+            return;
+
+        let selectedUser;
+
+        users.forEach((user) => {
+            if (user.email === email && user.password_hash === password)
+                selectedUser = user;
+
+        });
+        if (typeof selectedUser === "undefined") {
+            setMessage(["Invalid log in. Please try again."]);
+            return;
+        }
+        account.setAccount(selectedUser);
+        alert(`Log in sucessful! Welcome ${selectedUser.name}!`);
+
+
+
     }
 
     const handleSignUp = (event) => {
         event.preventDefault();
-        alert("Successful Sign Up!");
+        let errorMessage = [];
+        if (name === "")
+            errorMessage.push("Name field is blank.");
+        if (email === "")
+            errorMessage.push("Email field is blank.");
+        if (password.length < 8)
+            errorMessage.push("The length of password should be at least 8.");
+        if (errorMessage.length > 0) {
+            setMessage(errorMessage);
+            return;
+        }else{
+            setMessage([]);
+        }
+        API.postObject("user", {
+            name: name,
+            gender: gender,
+            email: email,
+            phone: phone,
+            password_hash: password,
+        });
+        alert("Successful Sign Up! Please log in.");
+        navigate('/login');
     }
 
     return (
@@ -70,7 +118,7 @@ function LoginPage(props) {
                                             <div>
                                                 <label className="form-label">Gender</label>
                                                 <select className="form-select" onChange={(event) => setGender(event.target.value)}>
-                                                    <option value="M">Male</option>
+                                                    <option selected="M">Male</option>
                                                     <option value="F">Female</option>
                                                 </select>
                                             </div>
@@ -92,6 +140,7 @@ function LoginPage(props) {
                                             </div>
                                         </form>
                                     }
+                                    <div style={{color: "red"}}>{message.map((message)=><li key={message}>{message}</li>)}</div>
                                 </div>
                             </div>
                         </div>
