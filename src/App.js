@@ -18,19 +18,18 @@ class App extends React.Component {
   }
   setAccount = (account) => this.setAccount({account: account});
 
-  getObject = (objectName, id) => {
+  getObject = async (objectName, id) => {
       let callID = id === "all" ? "" : id;
-      const response = fetch(`http://127.0.0.1:8000/api/${objectName}/${callID}`)
-          .then(response => response.json())
-          .then(
-              json => {
-                  console.log(json);
-                  alert(JSON.stringify(json));
-                  return json;
-              },
-              error => {
-                  alert(error);
-              });
+      let callName = id === "all" ? objectName.concat("s") : objectName;
+      const response = await fetch(`http://127.0.0.1:8000/api/${callName}/${callID}`);
+      if(response.ok){
+          const jsonResponse = await response.json();
+          return jsonResponse;
+      }else{
+          alert("API call failed. Please contact IT Team.")
+          return "failed";
+      }
+
   }
 
   postObject = (objectName, json) => {
@@ -39,7 +38,7 @@ class App extends React.Component {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(json),
       };
-      fetch(`http://127.0.0.1:8000/api/${objectName}/`, requestOptions)
+      fetch(`http://127.0.0.1:8000/api/${objectName}s/`, requestOptions)
           .then(response => response.json())
           .then(
               json => console.log(json),
