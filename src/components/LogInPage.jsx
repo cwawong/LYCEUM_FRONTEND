@@ -1,11 +1,14 @@
 import React, {useState} from 'react';
-import Topbar from "./topbar";
+import Topbar from "./Topbar";
 import Nav from 'react-bootstrap/Nav'
+import {AccountContext} from "../contexts/Contexts";
+
 
 
 
 
 function LoginPage(props) {
+    const account = React.useContext(AccountContext);
     const[state, setState] = useState('login');
     const[name, setName] = useState('');
     const[gender, setGender] = useState('');
@@ -15,7 +18,6 @@ function LoginPage(props) {
 
     const handleLogIn = (event) => {
         event.preventDefault();
-        console.log(event);
         alert("Successful Log In!");
     }
 
@@ -63,7 +65,7 @@ function LoginPage(props) {
                                         <form onSubmit={handleSignUp}>
                                             <div>
                                                 <label className="form-label">Preferred Name</label>
-                                                <input type="email" id="loginEmailInput" placeholder="Preferred Name" className="form-control" onChange={(event)=> setName(event.target.value)}/>
+                                                <input type="text" id="loginEmailInput" placeholder="Preferred Name" className="form-control" onChange={(event)=> setName(event.target.value)}/>
                                             </div>
                                             <div>
                                                 <label className="form-label">Gender</label>
