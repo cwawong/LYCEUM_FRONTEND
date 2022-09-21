@@ -12,11 +12,13 @@ import {AccountContext, APIContext} from "./contexts/Contexts";
 
 class App extends React.Component {
   state = {
-      topbarHeight: "100px",
-      loginStatus: "guest",
-      account: "hey",
+      topbarHeight: "10vh",
+      //guest or member
+      logInStatus: "guest",
+      account: "",
   }
-  setAccount = (account) => this.setAccount({account: account});
+  setAccount = (account) => this.setState({account: account});
+  setLogInStatus = (status) => this.setState({logInStatus: status});
 
   getObject = async (objectName, id) => {
       let callID = id === "all" ? "" : id;
@@ -73,8 +75,9 @@ class App extends React.Component {
 
     render() {
         return (
+            <div className="debug_border_red" style={{backgroundColor: "#202020", height: "100vh"}}>
             <APIContext.Provider value={{getObject: this.getObject, postObject: this.postObject, putObject: this.putObject, deleteObject: this.deleteObject}}>
-                <AccountContext.Provider value={{getAccount: this.state.account, setAccount: this.setAccount}}>
+                <AccountContext.Provider value={{getAccount: this.state.account, setAccount: this.setAccount, setLogInStatus: this.setLogInStatus, getLogInStatus: this.state.logInStatus}}>
                     <BrowserRouter>
                         <Routes>
                             <Route path="/home" element={<HomePage topbarHeight={this.state.topbarHeight}/>}/>
@@ -85,6 +88,7 @@ class App extends React.Component {
                     </BrowserRouter>
                 </AccountContext.Provider>
             </APIContext.Provider>
+            </div>
         )
     }
 }
