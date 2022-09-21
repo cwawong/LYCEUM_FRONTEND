@@ -42,6 +42,8 @@ function LoginPage(props) {
             return;
         }
         account.setAccount(selectedUser);
+        account.setLogInStatus("member");
+        navigate("/home");
         alert(`Log in sucessful! Welcome ${selectedUser.name}!`);
 
 
@@ -78,9 +80,9 @@ function LoginPage(props) {
         <div>
             <Topbar topbarHeight={props.topbarHeight}></Topbar>
             <div style={{paddingTop: props.topbarHeight}}>
-                <div className="container-fluid" style={{marginTop:"1vw", width: "100%"}}>
+                <div className="container-fluid" style={{marginTop:"2vh", width: "100%"}}>
                     <div className="row" style={{justifyContent: "center"}}>
-                        <div className="col-8 col-md-6 col-lg-6">
+                        <div className="col col-md-6 col-lg-6">
                             <div className="card">
                                 <div className="card-header" style={{textAlign: "center", fontSize: "20px", padding: "0px"}}>
                                     <Nav variant="tabs" defaultActiveKey="login" fill justify onSelect={(selectedKey) => setState(selectedKey)}>
