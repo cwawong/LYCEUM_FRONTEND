@@ -4,12 +4,6 @@ import Nav from 'react-bootstrap/Nav'
 import {AccountContext, APIContext} from "../contexts/Contexts";
 import { useNavigate } from 'react-router-dom';
 
-
-
-
-
-
-
 function LoginPage(props) {
     const account = React.useContext(AccountContext);
     const API = React.useContext(APIContext);
@@ -77,7 +71,7 @@ function LoginPage(props) {
     }
 
     return (
-        <div>
+        <div style={{backgroundColor: "#1A1A1A", height: "100%",}}>
             <Topbar topbarHeight={props.topbarHeight}></Topbar>
             <div style={{paddingTop: props.topbarHeight}}>
                 <div className="container-fluid" style={{marginTop:"2vh", width: "100%"}}>

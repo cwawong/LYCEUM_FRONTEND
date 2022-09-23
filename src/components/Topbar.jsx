@@ -2,9 +2,12 @@ import React, {useContext, useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import {AccountContext, APIContext} from "../contexts/Contexts";
 import Sidebar from "react-side-bar";
-import {Button, Drawer, List, ListItem, ListItemButton} from "@mui/material"
+import {Button, Drawer, IconButton, InputBase, List, ListItem, ListItemButton, TextField} from "@mui/material"
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import CancelIcon from '@mui/icons-material/Cancel';
+import SearchIcon from '@mui/icons-material/Search';
+import logo from '../static/images/logo.png'
+
 
 function Topbar(props) {
     const navigate = useNavigate();
@@ -17,6 +20,7 @@ function Topbar(props) {
     const [id, setID] = useState("");
     const [debugMode, setDebugMode] = useState(false);
     const [APIResponse, setAPIResponse] = useState([]);
+    const [sideBarContent, setSideBarContent] = useState([]);
 
 
     const APICaller = async () => {
@@ -29,41 +33,47 @@ function Topbar(props) {
         }
     }
 
+    const sideBarHandler = async (open, type) => {
+        if (type === "subjects"){
+            let tags = await API.getObject("tag", "all");
+            let subjects = tags.filter(tag => tag.is_subject);
+            setSideBarContent(subjects);
+        }
+        setSideBarOpen(open);
+    }
+
     return (
         <div>
             <header>
                 <div className="container-fluid position-fixed">
                     <div className="row" style={{background: "black", height: props.topbarHeight}}>
-                        <div className="col-6 d-flex p-0" style={{height: "100%", alignItems: "center",}}>
+                        <div className="col d-flex p-0" style={{height: "100%", }}>
                             <Button variant="text"
                                     style={{color: "#FFFFFF", height: "100%"}} onClick={() => navigate("/home")}>
                                 <img style={{maxHeight: "100%", width: "auto"}}
-                                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhnDz08lUWsDll_7m1NYkHV_U2gNmfvTWCGg&usqp=CAU"
+                                     src={logo}
                                      alt="No Image Loaded"/>
                             </Button>
 
                             <Button variant="text"
-                                    style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={() => setSideBarOpen(true)}>
+                                    style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={(event) => sideBarHandler(true, "subjects")}>
                                 <strong>subjects</strong>
                             </Button>
-                        </div>
-                        <div className="col-6 d-flex p-0" style={{justifyContent: "flex-end", height: "100%",  }}>
-                            {/*<div className="d-none d-xl-flex">*/}
-                            {/*    <button className="btn btn-primary m-1" onClick={APICaller}>*/}
-                            {/*        Call API(<strong>GET ONLY</strong>)*/}
-                            {/*    </button>*/}
-                            {/*    <button className="btn btn-primary m-1" onClick={(event) => setDebugMode(!debugMode)}>*/}
-                            {/*        Show Debugging Page*/}
-                            {/*    </button>*/}
-                            {/*    <input style={{width: "10vw"}} placeholder="Object Name"*/}
-                            {/*           onChange={(event) => setObjectName(event.target.value)}/>*/}
-                            {/*    <input style={{width: "10vw"}} placeholder="ID"*/}
-                            {/*           onChange={(event) => setID(event.target.value)}/>*/}
-                            {/*</div>*/}
+
+                            <InputBase
+                                sx={{ flex: 1 }}
+                                placeholder="Search Your Questions Here!"
+                                inputProps={{ 'aria-label': 'search google maps' }}
+
+                            />
+                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+                                <SearchIcon />
+                            </IconButton>
+
                             {account.getLogInStatus === "guest" &&
                                 <Button variant="text"
                                         style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={() => navigate("/login_page")}>
-                                    <strong>log in/ Sign Up</strong>
+                                    <strong>log in / Sign Up</strong>
                                 </Button>
                             }
                             {account.getLogInStatus === "member" &&
@@ -73,17 +83,16 @@ function Topbar(props) {
                                     <strong>{account.getAccount.name}</strong>
                                 </Button>
                             }
-                            <Drawer anchor="left" open={sideBarOpen} onClose={(event) => setSideBarOpen(false)}>
-                                <Button variant="text" onClick={(event) => setSideBarOpen(false)}><CancelIcon/>cancel</Button>
-                                <List>
-                                    {["RECENT", "TREND", "REPLIES"].map((value) =>
-                                        <ListItem >
-                                            <ListItemButton>{value}</ListItemButton>
-                                        </ListItem>)}
-                                </List>
-                            </Drawer>
                         </div>
-
+                        <Drawer anchor="left" open={sideBarOpen} onClose={(event) => setSideBarOpen(false)}>
+                            <Button variant="text" onClick={(event) => setSideBarOpen(false)}><CancelIcon/>cancel</Button>
+                            <List>
+                                {sideBarContent.map((content) =>
+                                    <ListItem >
+                                        <ListItemButton key={content.name}>{content.name}</ListItemButton>
+                                    </ListItem>)}
+                            </List>
+                        </Drawer>
                     </div>
                 </div>
             </header>
