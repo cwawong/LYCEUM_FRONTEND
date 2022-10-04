@@ -3,22 +3,30 @@ import {BrowserRouter, Link, Route, Routes} from "react-router-dom";
 import "./App.css"
 
 import HomePage from './components/HomePage'
-import View1 from './components/View1'
-import View2 from './components/View2'
+import SearchPage from "./components/SearchPage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import LoginPage from "./components/LogInPage";
-import {AccountContext, APIContext} from "./contexts/Contexts";
+import {AccountContext, APIContext, SearchContext} from "./contexts/Contexts";
+import PersonalAccountPage from "./components/PersonalAccountPage";
+import PostCreate from "./components/PostCreate";
+import Root from "./components/Root";
+import Topbar from "./components/Topbar";
+import PostDetail from "./components/PostDetail";
 
 class App extends React.Component {
     state = {
         topbarHeight: "10vh",
-        //guest or member
-        logInStatus: "guest",
+        logInStatus: "guest", //guest or member
+        searchQuery: {
+            query: null,
+            type: null
+        },
         account: "",
     }
     setAccount = (account) => this.setState({account: account});
     setLogInStatus = (status) => this.setState({logInStatus: status});
+    setSearchQuery = (query) => this.setState({searchQuery: query})
 
     theme = createTheme({
         palette: {
@@ -40,18 +48,20 @@ class App extends React.Component {
 
     }
 
-    postObject = (objectName, json) => {
+    postObject = async (objectName, json) => {
         const requestOptions = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(json),
         };
-        fetch(`http://127.0.0.1:8000/api/${objectName}s/`, requestOptions)
-            .then(response => response.json())
-            .then(
-                json => console.log(json),
-                error => alert(error)
-            );
+        const response = await fetch(`http://127.0.0.1:8000/api/${objectName}s/`, requestOptions).catch((error) => "failed");
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            return jsonResponse;
+        } else {
+            alert("API call failed. Please contact IT T2eam.")
+            return "failed";
+        }
     }
 
     putObject = (objectName, id, json) => {
@@ -94,17 +104,32 @@ class App extends React.Component {
                         setLogInStatus: this.setLogInStatus,
                         getLogInStatus: this.state.logInStatus
                     }}>
-                        <ThemeProvider theme={this.theme}>
-                        <BrowserRouter>
-                            <Routes>
-                                <Route path="/home" element={<HomePage topbarHeight={this.state.topbarHeight}/>}/>
-                                <Route path="/view_1" element={<View1 topbarHeight={this.state.topbarHeight}/>}/>
-                                <Route path="/view_2" element={<View2 topbarHeight={this.state.topbarHeight}/>}/>
-                                <Route path="/login_page"
-                                       element={<LoginPage topbarHeight={this.state.topbarHeight}/>}/>
-                            </Routes>
-                        </BrowserRouter>
-                        </ThemeProvider>
+                        <SearchContext.Provider
+                            value={{
+                                getSearchQuery: this.state.searchQuery,
+                                setSearchQuery: this.setSearchQuery
+                            }}>
+                            <ThemeProvider theme={this.theme}>
+                                <BrowserRouter>
+                                    <Routes>
+                                        <Route path="/"
+                                               element={<Root />}/>
+                                        <Route path="/home"
+                                               element={<HomePage topbarHeight={this.state.topbarHeight}/>}/>
+                                        <Route path="/search"
+                                               element={<SearchPage topbarHeight={this.state.topbarHeight}/>}/>
+                                        <Route path="/login"
+                                               element={<LoginPage topbarHeight={this.state.topbarHeight}/>}/>
+                                        <Route path="/personal-account"
+                                               element={<PersonalAccountPage topbarHeight={this.state.topbarHeight}/>}/>
+                                        <Route path="/create"
+                                               element={<PostCreate topbarHeight={this.state.topbarHeight}/>}/>
+                                        <Route path="/detail/postID=:postID"
+                                               element={<PostDetail topbarHeight={this.state.topbarHeight}/>} />
+                                    </Routes>
+                                </BrowserRouter>
+                            </ThemeProvider>
+                        </SearchContext.Provider>
                     </AccountContext.Provider>
                 </APIContext.Provider>
             </div>
