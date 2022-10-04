@@ -23,13 +23,11 @@ function LoginPage(props) {
         let users = await API.getObject("user", "all");
         if (users === "failed")
             return;
-
         let selectedUser;
 
         users.forEach((user) => {
             if (user.email === email && user.password_hash === password)
                 selectedUser = user;
-
         });
         if (typeof selectedUser === "undefined") {
             setMessage(["Invalid log in. Please try again."]);
@@ -39,9 +37,6 @@ function LoginPage(props) {
         account.setLogInStatus("member");
         navigate("/home");
         alert(`Log in sucessful! Welcome ${selectedUser.name}!`);
-
-
-
     }
 
     const handleSignUp = (event) => {
@@ -71,7 +66,7 @@ function LoginPage(props) {
     }
 
     return (
-        <div style={{backgroundColor: "#1A1A1A", height: "100%",}}>
+        <div style={{backgroundColor: "#1A1A1A",}}>
             <Topbar topbarHeight={props.topbarHeight}></Topbar>
             <div style={{paddingTop: props.topbarHeight}}>
                 <div className="container-fluid" style={{marginTop:"2vh", width: "100%"}}>
@@ -142,7 +137,6 @@ function LoginPage(props) {
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     );

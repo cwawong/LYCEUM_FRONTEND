@@ -1,8 +1,16 @@
 import React, {useContext, useState} from 'react';
 import {Link, useNavigate} from "react-router-dom";
-import {AccountContext, APIContext} from "../contexts/Contexts";
+import {AccountContext, APIContext, SearchContext} from "../contexts/Contexts";
 import Sidebar from "react-side-bar";
-import {Button, Drawer, IconButton, InputBase, List, ListItem, ListItemButton, TextField} from "@mui/material"
+import {
+    Button,
+    Drawer,
+    IconButton,
+    InputBase,
+    List,
+    ListItem,
+    ListItemButton,
+} from "@mui/material"
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import CancelIcon from '@mui/icons-material/Cancel';
 import SearchIcon from '@mui/icons-material/Search';
@@ -14,6 +22,7 @@ function Topbar(props) {
 
     const API = useContext(APIContext);
     const account = useContext(AccountContext);
+    const search = useContext(SearchContext);
 
     const [objectName, setObjectName] = useState("");
     const [sideBarOpen, setSideBarOpen] = useState(false);
@@ -21,11 +30,11 @@ function Topbar(props) {
     const [debugMode, setDebugMode] = useState(false);
     const [APIResponse, setAPIResponse] = useState([]);
     const [sideBarContent, setSideBarContent] = useState([]);
+    const [query, setQuery] = useState("");
 
 
     const APICaller = async () => {
         const response = await API.getObject(objectName, id);
-        console.log(response);
         if (typeof response.length === "undefined" || typeof response === "string") {
             setAPIResponse([response]);
         } else {
@@ -40,6 +49,17 @@ function Topbar(props) {
             setSideBarContent(subjects);
         }
         setSideBarOpen(open);
+    }
+
+    const handleSearchQuery = (query, type) => event => {
+        event.preventDefault();
+        if (!["tag", "message"].includes(type)){
+            alert("Invalid Search Type.")
+            return;
+        }
+        search.setSearchQuery({query: query, type: type});
+
+        navigate("/search");
     }
 
     return (
@@ -60,25 +80,33 @@ function Topbar(props) {
                                 <strong>subjects</strong>
                             </Button>
 
-                            <InputBase
-                                sx={{ flex: 1 }}
-                                placeholder="Search Your Questions Here!"
-                                inputProps={{ 'aria-label': 'search google maps' }}
-
-                            />
-                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                                <SearchIcon />
-                            </IconButton>
+                            <form onSubmit={handleSearchQuery(query, "message")} style={{display: 'flex', alignItems: 'center', width: "80%"}}>
+                                <InputBase
+                                    sx={{flex: 1}}
+                                    style={{width: "90%"}}
+                                    placeholder="Search Your Questions Here!"
+                                    inputProps={{'aria-label': 'search google maps'}}
+                                    onChange={event => setQuery(event.target.value)}
+                                />
+                                <IconButton type="button" sx={{p: '10px'}} aria-label="search" onClick={handleSearchQuery(query, "message")}>
+                                    <SearchIcon/>
+                                </IconButton>
+                            </form>
 
                             {account.getLogInStatus === "guest" &&
                                 <Button variant="text"
-                                        style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={() => navigate("/login_page")}>
+                                        style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={() => navigate("/login")}>
                                     <strong>log in / Sign Up</strong>
                                 </Button>
                             }
                             {account.getLogInStatus === "member" &&
+                                // <Button variant="text"
+                                //         style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={() => navigate("/personal-account")}>
+                                //     <AccountBoxIcon/>
+                                //     <strong>{account.getAccount.name}</strong>
+                                // </Button>
                                 <Button variant="text"
-                                        style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}} onClick={() => navigate("/login_page")}>
+                                        style={{color: "#FFFFFF", fontSize: "100%", width: "20%",}}>
                                     <AccountBoxIcon/>
                                     <strong>{account.getAccount.name}</strong>
                                 </Button>
@@ -87,9 +115,9 @@ function Topbar(props) {
                         <Drawer anchor="left" open={sideBarOpen} onClose={(event) => setSideBarOpen(false)}>
                             <Button variant="text" onClick={(event) => setSideBarOpen(false)}><CancelIcon/>cancel</Button>
                             <List>
-                                {sideBarContent.map((content) =>
+                                {sideBarContent.map((tag) =>
                                     <ListItem >
-                                        <ListItemButton key={content.name}>{content.name}</ListItemButton>
+                                        <ListItemButton onClick={(event) => {setSideBarOpen(false); search.setSearchQuery({type: "tag", query: tag.name}); navigate("/search");}}>{tag.name}</ListItemButton>
                                     </ListItem>)}
                             </List>
                         </Drawer>
