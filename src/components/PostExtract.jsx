@@ -2,7 +2,7 @@ import React, {useContext, useEffect} from 'react';
 import {Avatar, Button, Card, CardActions, CardContent, CardHeader, Chip, Typography} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import {AccountContext, APIContext, SearchContext} from "../contexts/Contexts";
-import {blue, deepOrange} from "@mui/material/colors";
+import {blue, deepOrange, deepPurple, indigo, pink, purple, red, yellow} from "@mui/material/colors";
 
 function PostExtract(props) {
     const navigate = useNavigate();
@@ -10,7 +10,7 @@ function PostExtract(props) {
     const API = useContext(APIContext);
     const account = useContext(AccountContext);
     const search = useContext(SearchContext);
-
+    const color = [red[500], blue[500], yellow[500], pink[500], purple[500], indigo[500], deepPurple[500]];
     return (
         <Card style={{marginBottom: "5%"}}>
             <CardContent>
@@ -46,7 +46,7 @@ function PostExtract(props) {
                                         </div>
                                         <div className="col-4" style={{justifyContent: "center"}}>
                                             <Avatar
-                                                sx={{bgcolor: blue[500]}}>{props.post.user_info?.name.substring(0, 1).toUpperCase()}</Avatar>
+                                                sx={{bgcolor: color[props.post.user_info?.name.charCodeAt(0) % color.length]}}>{props.post.user_info?.name.substring(0, 1).toUpperCase()}</Avatar>
                                         </div>
                                     </div>
                                 </CardContent>

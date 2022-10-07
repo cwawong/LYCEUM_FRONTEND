@@ -23,18 +23,14 @@ function PostCreate(props) {
             navigate('/home');
             return;
         }
-        console.log(account.getAccount)
         const response = async () => await API.getObject("tag", "all");
         response().then(json => {
             if (json === "failed")
                 return;
-            console.log("fucked");
             const tags = [];
             for(let i = 0; i < json.length; i++){
                 tags.push(json[i].name);
             }
-            console.log(json);
-            console.log(tags);
             tags.sort();
             setAvailableTags(tags);
         });
@@ -47,8 +43,6 @@ function PostCreate(props) {
         let tempSelected = selectedTags;
         let tempAvailable = availableTags.filter((tag) => tag !== currentTags);
         tempSelected.push(currentTags);
-        console.log(tempSelected);
-        console.log("sel", selectedTags)
         tempSelected.sort();
         tempAvailable.sort();
         setSelectedTags(tempSelected);
@@ -75,7 +69,6 @@ function PostCreate(props) {
             user: account.getAccount.id,
         }
         let response = await API.postObject("post", json);
-        console.log(response);
         navigate("/");
     }
 
@@ -109,7 +102,7 @@ function PostCreate(props) {
 
                                 <div className="d-flex">
                                 <IconButton type="button" style={{width: "25%"}} onClick={handleCurrentTagAdded}><AddCircleOutlineIcon/></IconButton>
-                                <Autocomplete  value={currentTags} style={{width: "75%"}}  onChange={(event, value) => {console.log(value);setCurrentTags(value);}} renderInput={(params) => <TextField {...params} label="Tags here!" style={{width: "100%"}}/>} options={availableTags} />
+                                <Autocomplete  value={currentTags} style={{width: "75%"}}  onChange={(event, value) => {setCurrentTags(value);}} renderInput={(params) => <TextField {...params} label="Tags here!" style={{width: "100%"}}/>} options={availableTags} />
                                 </div>
                             </div>
                             <div className="d-flex flex-wrap" style={{width: "80%", border: "1px solid white", borderRadius: "20px", padding: "1%"}}>

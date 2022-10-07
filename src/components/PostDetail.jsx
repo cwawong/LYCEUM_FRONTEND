@@ -31,14 +31,13 @@ function PostDetail(props) {
         postResponse().then(json => {
             if (json === "failed")
                 return;
-            console.log(json);
+
             setPost(json);
         });
         const subPostResponse = async () => await API.getObject("sub-post", postID.toString());
         subPostResponse().then(json => {
             if (json === "failed")
                 return;
-            console.log("subpost", json);
             setSubPosts(json);
         });
     }
@@ -55,7 +54,7 @@ function PostDetail(props) {
             main_post: postID,
         }
         let response = await API.postObject("sub-post", json);
-        console.log(response);
+
         alert("Successful Reply!");
         setReplyMessage("");
         setDraftMode(false);

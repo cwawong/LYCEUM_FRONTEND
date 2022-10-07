@@ -26,8 +26,14 @@ function SearchPage(props) {
             }
             if(search.getSearchQuery.type === "message"){
                 json.forEach((post) => {
-                  if(post.message.toLowerCase().includes(search.getSearchQuery.query.toLowerCase()))
+                  if(post.message.toLowerCase().includes(search.getSearchQuery.query.toLowerCase()) || post.title.toLowerCase().includes(search.getSearchQuery.query.toLowerCase()))
                       filteredPosts.push(post);
+                })
+                json.forEach((post) => {
+                    let tags = []
+                    post.tags?.forEach((tag) => tags.push(tag.name.toLowerCase()))
+                    if(tags.includes(search.getSearchQuery.query.toLowerCase()))
+                        filteredPosts.push(post);
                 })
             }
             setPosts(filteredPosts);
